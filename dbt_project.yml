@@ -10,7 +10,7 @@ config-version: 2
 profile: 'default'
 
 # These configurations specify where dbt should look for different types of files.
-# The `model-paths` config, for example, states that models in this project can be
+# The `source-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -28,26 +28,28 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
-# In dbt, the default materialization for a model is a view. This means, when you run 
-# dbt run or dbt build, all of your models will be built as a view in your data platform. 
-# The configuration below will override this setting for models in the example folder to 
-# instead be materialized as tables. Any models you add to the root of the models folder will 
-# continue to be built as views. These settings can be overridden in the individual model files
+# In this example config, we tell dbt to build all models in the example/ directory
+# as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
-
 models:
   portfolio_tracking:
     +materialized: view
-    staging:    # Data storage layer
+
+    staging:    # Data storage layer - Applies to all files under models/staging/
       +materialized: view
       +schema: STAGING
-    refined:    # Refined data layer
-      +materialized: view
+
+    refined:    # Refined Data layer - Applies to all files under models/refined/
+      +materialized: table
       +schema: REFINED
-    marts:      # Data delivery layer
-      portfolio:     # one specific data mart
+
+    marts:     # Data delivery layer - Applies to all files under models/marts
+      portfolio:      # One specific data mart - Applies to all files under models/marts/portfolio
         +materialized: table
         +schema: MART_PORTFOLIO
+
+# Configuring Snapshots
+# Full documentation: https://docs.getdbt.com/reference/snapshot-configs
 snapshots:
   portfolio_tracking:
     +target_schema: SNAPSHOTS
