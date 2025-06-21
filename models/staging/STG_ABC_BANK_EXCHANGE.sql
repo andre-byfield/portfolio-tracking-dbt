@@ -45,21 +45,14 @@ with_default_record as(
 ),
  hashed as (
     SELECT
-          concat_ws('|', ID) as EXCHANGE_HKEY
-        , concat_ws('|', COALESCE(Name,''),
-                            COALESCE(ID,''),
-                            COALESCE(Country,''),
-                            COALESCE(City,''),
-                            COALESCE(Zone,''),
-                            COALESCE(Delta,''),
-                            COALESCE(DST_period,''),
-                            COALESCE(Open,''),
-                            COALESCE(Close,''),
-                            COALESCE(Lunch,''),
-                            COALESCE(Open_UTC,''),
-                            COALESCE(Close_UTC,''),
-                            COALESCE(Lunch_UTC,'') )
-                as EXCHANGE_HDIFF
+      {{ dbt_utils.surrogate_key(['ID'])
+      }} as EXCHANGE_HKEY
+    , {{ dbt_utils.surrogate_key([
+             'ID', 'COUNTRY',
+             'CITY', 'ZONE', 'DELTA',
+             'DST_PERIOD', 'OPEN', 'CLOSE',
+             'LUNCH', 'OPEN_UTC', 'CLOSE_UTC', 'LUNCH_UTC' ])
+      }} as EXCHANGE_HDIFF
         , * EXCLUDE LOAD_TS
         , LOAD_TS as LOAD_TS_UTC
     FROM src_data
