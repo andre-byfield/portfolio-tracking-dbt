@@ -1,5 +1,7 @@
 {% snapshot SNSH_ABC_BANK_EXCHANGE %}
 
+{{ config(enabled=false) }} 
+
 {{
     config(
       unique_key= 'EXCHANGE_HKEY',
